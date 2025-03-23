@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Get Your Location</title>
+    <script>
+        function checkBrowser() {
+            let userAgentString = navigator.userAgent;
+            
+            let isChrome = userAgentString.includes("Chrome") && !userAgentString.includes("Edg") && !userAgentString.includes("OP") && !userAgentString.includes("CriOS");
+            let isFirefox = userAgentString.includes("Firefox");
+            let isSafari = userAgentString.includes("Safari") && !userAgentString.includes("Chrome") && !userAgentString.includes("CriOS");
+            let isEdge = userAgentString.includes("Edg");
+            let isOpera = userAgentString.includes("OP") || userAgentString.includes("Opera");
+            let isIE = userAgentString.includes("MSIE") || userAgentString.includes("Trident");
+
+            if (isChrome) return "Chrome";
+            if (isFirefox) return "Firefox";
+            if (isSafari) return "Safari";
+            if (isEdge) return "Edge";
+            if (isOpera) return "Opera";
+            if (isIE) return "IE";
+            
+            return "Other";
+        }
+
+        function getLocation() {
+            let browser = checkBrowser();
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        showPosition(position);
+                    },
+                    function (error) {
+                        showError(error, browser);
+                    },
+                    { enableHighAccuracy: true }
+                );
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+
+            // Your Google Form link with actual location
+            let formURL = `https://docs.google.com/forms/d/e/1FAIpQLSc6VtpEziEFYGu0d1gxSECxJRnKbcFG98SIvW-oZuQkxOah_g/viewform?usp=pp_url&entry.1223114510=${latitude},${longitude}`;
+            
+            window.location.href = formURL;
+        }
+
+        function showError(error, browser) {
+            let errorMessage;
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    if (browser === "Chrome") {
+                        errorMessage = "You denied location access. To enable it in Chrome:\n\n" +
+                                       "1. Click the 🔒 lock icon in the address bar.\n" +
+                                       "2. Go to 'Site Settings'.\n" +
+                                       "3. Set 'Location' to 'Allow'.\n" +
+                                       "4. Refresh the page and click the button again.";
+                    } else if (browser === "Safari") {
+                        errorMessage = "You denied location access. To enable it in Safari:\n\n" +
+                                       "1. Open Settings > Privacy & Security > Location Services.\n" +
+                                       "2. Find 'Safari Websites' and set it to 'While Using'.\n" +
+                                       "3. Reload this page and try again.";
+                    } else if (browser === "Firefox") {
+                        errorMessage = "You denied location access. To enable it in Firefox:\n\n" +
+                                       "1. Click the location icon (📍) in the address bar.\n" +
+                                       "2. Change 'Blocked' to 'Allowed'.\n" +
+                                       "3. Reload this page and try again.";
+                    } else if (browser === "Edge") {
+                        errorMessage = "You denied location access. To enable it in Edge:\n\n" +
+                                       "1. Click the 🔒 lock icon in the address bar.\n" +
+                                       "2. Go to 'Permissions for this site'.\n" +
+                                       "3. Set 'Location' to 'Allow'.\n" +
+                                       "4. Refresh the page and try again.";
+                    } else {
+                        errorMessage = "Location permission denied. Please enable it in your browser settings.";
+                    }
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    errorMessage = "The request to get your location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    errorMessage = "An unknown error occurred.";
+                    break;
+            }
+            alert(errorMessage);
+        }
+    </script>
+</head>
+<body>
+    <h2>Click the button below to get your location</h2>
+    <button onclick="getLocation()">Get Location</button>
+</body>
+</html>
